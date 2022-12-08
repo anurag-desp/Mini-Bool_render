@@ -1020,9 +1020,20 @@ if __name__ == "__main__":
     st.image(image, caption='CV Raman Global University')
 
     st.markdown(
-        '''<h5 style = 'text-align: left;'><span style="color:#82E0AA;">
-        Creator:</span> <span style="color:#F1948A;font-weight:250;font-size:25px"><b>Anurag</b></span></h5> 
-        <h5 style = 'text-align: right;'><span style="color:#F1948A;">Mentor:</span> <span style="color:#82E0AA;font-weight:250;font-size:26px"><b>Dr. Tusarkanti Dash</b></span></h5>''',
+        '''<span style="color:#C70039;font-weight:600;font-size:20px"> Experiential Learning Project(2022)</span>
+        <br><span style="color:#1F618D;font-weight:600;font-size:30px">SCLD</span>
+        <span style="color:#E67E22;font-weight:600;font-size:16px">(Switching Circuits and Logic Design)</span>''',
+        unsafe_allow_html = True)
+
+    # Hit counter
+
+    st.sidebar.markdown('Thank You for visiting!\n![Visitor count](https://shields-io-visitor-counter.herokuapp.com/badge?page=https://share.streamlit.io/https://minibool-lohi.onrender.com/&label=VisitorsCount&labelColor=000000&logo=GitHub&logoColor=FFFFFF&color=1D70B8&style=for-the-badge)')
+
+    st.markdown("___")
+    st.markdown(
+        '''<h5 style = 'text-align: left;'><span style="color:#1E5E9E;">
+        Creator:</span> <span style="color:#CB2C2C;font-weight:250;font-size:25px"><b>Anurag</b></span></h5> 
+        <h5 style = 'text-align: right;'><span style="color:#CB2C2C;">Mentor:</span> <span style="color:#1E5E9E;font-weight:250;font-size:26px"><b>Dr. Tusarkanti Dash</b></span></h5>''',
         unsafe_allow_html=True
     )
 
@@ -1259,6 +1270,7 @@ if __name__ == "__main__":
         anime_done,
         loop = True,
     )
+
     # making them empty as they are global variables and to make this program endless until exit is entered, they need to be refreshed for each iteration
     used = []
     unused = []
@@ -1267,6 +1279,7 @@ if __name__ == "__main__":
 
 
     
+
 
 
 
