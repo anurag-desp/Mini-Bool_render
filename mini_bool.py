@@ -698,7 +698,7 @@ def takeInput():
         temp_list = []
         str_minterms = st.text_input("Enter (space seperated) minterms (eg: 0 1 3 5 7)")
         str_dont_care = ""
-        str_dont_care = st.text_input("Enter (space seperated Don't Care minterms, if any)")
+        str_dont_care = st.text_input("Enter (space seperated) Don't Care minterms, if any")
 
         if not str_minterms:
             st.warning("There is **NOTHING** to Solve here yet!")
@@ -791,7 +791,7 @@ def takeInput():
         temp_list = []
         str_maxterms = st.text_input("Enter (space seperated) maxterms (eg: 0 1 3 5 7)")
         str_dont_care = ""
-        str_dont_care = st.text_input("Enter (space seperated Don't Care maxterms, if any)")
+        str_dont_care = st.text_input("Enter (space seperated) Don't Care maxterms, if any")
 
         if not str_maxterms:
             st.warning("There is **NOTHING** to Solve here yet!")
@@ -907,7 +907,7 @@ def takeInput():
             exp = removeall(exp, ')')
 
             dont_care = ""
-            dont_care = st.text_input("Enter the Don't Care SOP expression")
+            dont_care = st.text_input("Enter the Don't Care SOP expression, if any")
             dont_care = list(dont_care)
             dont_care = removeall(dont_care, ' ')
             dont_care = removeall(dont_care, '.')
@@ -1044,7 +1044,7 @@ def takeInput():
             exp = removeall(exp, ')')
 
             dont_care = ""
-            dont_care = st.text_input("Enter the Don't Care POS expression")
+            dont_care = st.text_input("Enter the Don't Care POS expression, if any")
             dont_care = removeall(dont_care, ' ')
             dont_care = removeall(dont_care, '(')
             dont_care = removeall(dont_care, ')')
