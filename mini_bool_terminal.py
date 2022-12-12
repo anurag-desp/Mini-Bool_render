@@ -395,18 +395,30 @@ def findEPIs(prime_implicants, minterms, epis):
                     minterms.remove(i)
 
             if minterms == []:
+                 print("epis(unique)")
+                 display(epis)
                  return epis
+
+            print("epis(unique)")
+            display(epis)
             return findEPIs(prime_implicants, minterms,epis)    
         
         count = 0
                 
     count = 0
     length = 0
-    # pi = None
+    pi = []
     for k in prime_implicants:
         for j in k:
             if j in minterms:
                 count += 1
+
+        if count >= 1:
+            if len(k) > len(pi):
+                pi = k
+                count = 0
+                continue
+
         if count > length:
             length = count
             pi = k
@@ -420,7 +432,12 @@ def findEPIs(prime_implicants, minterms, epis):
             minterms.remove(k)
 
     if minterms ==[]:
+        print("epis(max covered)")
+        display(epis)
         return epis
+
+    print("epis(max covered)")
+    display(epis)
     return findEPIs(prime_implicants, minterms, epis)
 
 # Get the EPIs as argument in the function that will return  the boolean exprssion in a list with each element as the terms $
@@ -607,7 +624,7 @@ def takeInput():
         print("\n\t\t\tYour minterms\n\t\t\t\u03A3m",end = " ")
         print(tuple(original_minterms), end = "\n")
 
-        print("\n\t\t\tYour Don't Care terms\n\t\t\t\u03A3m",end = " ")
+        print("\n\t\t\tYour Don't Care terms\n\t\t\t\u03A3d",end = " ")
         print(tuple(dont_care), end = "\n")
 
         print("\t\tTotal number of minterms entered: ", len(minterms), end = "\n\n")
@@ -689,7 +706,7 @@ def takeInput():
         print("\n\t\t\tYour maxterms\n\t\t\t\u03A0 M",end = " ")
         print(tuple(original_maxterms), end = "\n")
 
-        print("\n\t\t\tYour Don't Care terms\n\t\t\t\u03A3m",end = " ")
+        print("\n\t\t\tYour Don't Care terms\n\t\t\t\u03A3d",end = " ")
         print(tuple(dont_care), end = "\n")
 
         print("\t\tTotal number of maxterms entered: ", len(maxterms), end = "\n\n")
@@ -839,7 +856,7 @@ def takeInput():
             print("\n\n\t\t\tYour Minterms\n\t\t\t\u03A3m",end = " ")
             print(tuple(og_minterms), end = "\n")
 
-            print("\n\t\t\tYour Don't Care Minterms\n\t\t\t\u03A3m",end = " ")
+            print("\n\t\t\tYour Don't Care terms\n\t\t\t\u03A3d",end = " ")
             print(tuple(dont_care_minterms), end = "\n")
 
             print("\t\tTotal number of minterms entered: ", len(minterms), end = "\n\n")
@@ -954,7 +971,7 @@ def takeInput():
             print("\n\n\t\t\tYour maxterms\n\t\t\t\u03A3m",end = " ")
             print(tuple(og_maxterms), end = "\n")
 
-            print("\n\t\t\tYour Don't Care maxterms\n\t\t\t\u03A3m",end = " ")
+            print("\n\t\t\tYour Don't Care terms\n\t\t\t\u03A3d",end = " ")
             print(tuple(dont_care_maxterms), end = "\n")
 
             print("\t\tTotal number of maxterms entered: ", len(maxterms), end = "\n\n")
@@ -1018,6 +1035,7 @@ if __name__ == "__main__":
 
         # Obtaining the prime implicants for the given minterms, in binary and 1's ,0's and '_'s format
         prime_implicants = matchPairs(grouped_binary_list)
+        prime_implicants = removeDuplicates(prime_implicants)
 
         # If only one group is formed based on the number of 1's they have then it doesn't make sense to match them as they all will we unused and hence a prime implicant, so when this type of group is sent to matchPairs() function, it will return [], also unused will be [], to will unused as it should be this condition is used
         if len(grouped_binary_list) == 1:
@@ -1025,9 +1043,15 @@ if __name__ == "__main__":
 
         # All the possible prime implicants are obtained
         prime_implicants = unused + prime_implicants
+        prime_implicants = removeDuplicates(prime_implicants)
+
+        print("prime_implicants")
+        display(prime_implicants)
 
         # Obtaining the corresponding decimals or minterms involved in each of the prime implicant. This will later be used to find Essential Prime Implicants
         prime_decimals = primeToDecmal(prime_implicants)
+        print("prime_decimals")
+        display(prime_decimals)
         
         decimals_to_send = prime_decimals.copy()    # So that the original list is unchanged
 
@@ -1036,6 +1060,8 @@ if __name__ == "__main__":
 
         # Obtaining the Essential Prime implicants in the form of lists of minterms
         EPIs = findEPIs(decimals_to_send, to_send, [])
+        print("EPIs")
+        display(EPIs)
 
         # Obtaining the Essential Prime Implicants from the list of prime implicants
         EPIs_binary = []

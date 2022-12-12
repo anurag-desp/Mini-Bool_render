@@ -349,11 +349,18 @@ def findEPIs(prime_implicants, minterms, epis):
                 
     count = 0
     length = 0
-    # pi = None
+    pi = []
     for k in prime_implicants:
         for j in k:
             if j in minterms:
                 count += 1
+
+        if count >= 1:
+            if len(k) > len(pi):
+                pi = k
+                count = 0
+                continue
+
         if count > length:
             length = count
             pi = k
@@ -498,7 +505,7 @@ def expToMinOrMaxterms(exp, vars, min_max):
     return minterms
 
 
-def twoVarKmap(minterms, zero_or_one):
+def twoVarKmap(minterms, dont_care, zero_or_one):
     kmap = [[' ', ' '], [' ', ' ']]
     map = [' ', ' ', ' ', ' ']
 
@@ -509,6 +516,9 @@ def twoVarKmap(minterms, zero_or_one):
 
     for i in minterms:
         map[i] = term
+    
+    for i in dont_care:
+        map[i] = 'X'
     
     k = -1
     for i in range(2):
@@ -523,7 +533,7 @@ def twoVarKmap(minterms, zero_or_one):
     return df
 
 
-def threeVarKmap(minterms, zero_or_one):
+def threeVarKmap(minterms, dont_care, zero_or_one):
     kmap = [[' ', ' ', ' ', ' '], [' ', ' ', ' ', ' ']]
     map = [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ']
 
@@ -543,6 +553,19 @@ def threeVarKmap(minterms, zero_or_one):
             map[6] = term
         else:
             map[i] = term
+
+    for i in dont_care:
+        if i == 2:
+            map[3] = 'X'
+        elif i == 3:
+            map[2] = 'X'
+        elif i == 6:
+            map[7] = 'X'
+        elif i == 7:
+            map[6] = 'X'
+        else:
+            map[i] = 'X'
+
     k = -1
     for i in range(2):
         for j in range(4):
@@ -557,7 +580,7 @@ def threeVarKmap(minterms, zero_or_one):
     return df
 
 
-def fourVarKmap(minterms, zero_or_one):
+def fourVarKmap(minterms, dont_care, zero_or_one):
     kmap = [[' ', ' ', ' ', ' '], [' ', ' ', ' ', ' '], [' ', ' ', ' ', ' '], [' ', ' ', ' ', ' ']]
     map = [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ']
 
@@ -593,7 +616,34 @@ def fourVarKmap(minterms, zero_or_one):
             map[10] = term
         else:
             map[i] = term
-    
+
+    for i in dont_care:
+            if i == 2:
+                map[3] = 'X'
+            elif i == 3:
+                map[2] = 'X'
+            elif i == 6:
+                map[7] = 'X'
+            elif i == 7:
+                map[6] = 'X'
+            elif i == 8:
+                map[12] = 'X'
+            elif i == 9:
+                map[13] = 'X'
+            elif i == 11:
+                map[14] = 'X'
+            elif i == 10:
+                map[15] = 'X'
+            elif i == 12:
+                map[8] = 'X'
+            elif i == 13:
+                map[9] = 'X'
+            elif i == 14:
+                map[11] = 'X'
+            elif i == 15:
+                map[10] = 'X'
+            else:
+                map[i] = 'X'
     k = -1
     for i in range(4):
         for j in range(4):
@@ -644,35 +694,52 @@ def takeInput():
         st.markdown("***")
         st.info("Do not worry about order or repetition\n")
         minterms = []
+        dont_care = []
         temp_list = []
         str_minterms = st.text_input("Enter (space seperated) minterms (eg: 0 1 3 5 7)")
+        str_dont_care = ""
+        str_dont_care = st.text_input("Enter (space seperated Don't Care minterms, if any)")
 
         if not str_minterms:
             st.warning("There is **NOTHING** to Solve here yet!")
             st.stop()
-        
+
+
         temp_list = str_minterms.split(' ')
+        str_dont_care = str_dont_care.split(' ')
 
         temp_list = removeall(temp_list, '')
+        temp_dont_care = removeall(str_dont_care, '')
 
         for i in temp_list:
             minterms.append(int(i))
-        
+
+        for i in temp_dont_care:
+            dont_care.append(int(i))
+
+        original_minterms = []
+        for i in minterms:
+            if i not in dont_care:
+                original_minterms.append(i)
+                
+        minterms = minterms + dont_care
+
         minterms = removeDuplicates(minterms)
 
         minterms.sort()
+        dont_care.sort()
 
         # Prints the minterms and the number of minterms
         st.markdown(
-            f''' 🔷 Your **minterms**:  <span style="color:#FF4F4F;font-weight:700;font-size:20px">**\u03A3m**{str(tuple(minterms))} </span>''', unsafe_allow_html=True
+            f''' 🔷 Your **minterms**:  <span style="color:#FF4F4F;font-weight:700;font-size:20px">**\u03A3m**{str(tuple(original_minterms))} </span>''', unsafe_allow_html=True
+        )
+        st.markdown(
+            f''' 🔷 Your **Don't Care terms**:  <span style="color:#FF4F4F;font-weight:700;font-size:20px">**\u03A3d**{str(tuple(dont_care))} </span>''', unsafe_allow_html=True
         )
         st.markdown(
             f''' 🔷 **Total** number of minterms entered: <span style="color:#E67E22;font-weight:700;font-size:20px">{len(minterms)} </span>''', unsafe_allow_html=True
         )
 
-        # handles the number of variables part
-            # Asks if the user wishes to go with it the solution with minimum number of variables required
-            # If the user wishes to give custom number of variables, then check if the given number is feseable or not
         num_of_variables = minimumPossibleVariables(minterms)
 
         st.markdown(
@@ -689,22 +756,22 @@ def takeInput():
                     ''' <span style="color:#1E8449;font-weight:600;font-size:16px"> **K-Map** for the given </span> <span style="color:#FFD580;font-weight:650;font-size:20px">Minterms</span>''',
                     unsafe_allow_html= True
                 )
-                st.dataframe(twoVarKmap(minterms, 1))
+                st.dataframe(twoVarKmap(minterms, dont_care, 1))
             elif num_of_variables == 3:
                 st.markdown(
                     ''' <span style="color:#1E8449;font-weight:600;font-size:16px"> **K-Map** for the given </span> <span style="color:#FFD580;font-weight:650;font-size:20px">Minterms</span>''',
                     unsafe_allow_html= True
                 )
-                st.dataframe(threeVarKmap(minterms, 1))
+                st.dataframe(threeVarKmap(minterms, dont_care, 1))
             else:
                 st.markdown(
                     ''' <span style="color:#1E8449;font-weight:600;font-size:16px"> **K-Map** for the given </span> <span style="color:#FFD580;font-weight:650;font-size:20px">Minterms</span>''',
                     unsafe_allow_html= True
                 )
-                st.dataframe(fourVarKmap(minterms, 1))
+                st.dataframe(fourVarKmap(minterms, dont_care, 1))
             st.markdown("***")
 
-        return [minterms, num_of_variables, 1]
+        return [minterms, num_of_variables, original_minterms, dont_care, 1]
     
 
     # Handles maxterm input
@@ -720,35 +787,51 @@ def takeInput():
         st.markdown("***")
         st.info("Do not worry about order or repetition\n")
         maxterms = []
+        dont_care = []
         temp_list = []
         str_maxterms = st.text_input("Enter (space seperated) maxterms (eg: 0 1 3 5 7)")
+        str_dont_care = ""
+        str_dont_care = st.text_input("Enter (space seperated Don't Care maxterms, if any)")
 
         if not str_maxterms:
             st.warning("There is **NOTHING** to Solve here yet!")
             st.stop()
         
         temp_list = str_maxterms.split(' ')
+        str_dont_care = str_dont_care.split(' ')
 
         temp_list = removeall(temp_list, '')
+        temp_dont_care = removeall(str_dont_care, '')
 
         for i in temp_list:
             maxterms.append(int(i))
-        
+
+        for i in temp_dont_care:
+            dont_care.append(int(i))
+
+        original_maxterms = []
+        for i in maxterms:
+            if i not in dont_care:
+                original_maxterms.append(i)
+                
+        maxterms = maxterms + dont_care
+
         maxterms = removeDuplicates(maxterms)
 
         maxterms.sort()
+        dont_care.sort()
 
         # Prints the maxterms and the number of maxterms
         st.markdown(
-            f''' 🔷 Your **maxterms**:  <span style="color:#FF4F4F;font-weight:700;font-size:20px">**\u03A0M**{str(tuple(maxterms))} </span>''', unsafe_allow_html=True
+            f''' 🔷 Your **maxterms**:  <span style="color:#FF4F4F;font-weight:700;font-size:20px">**\u03A3m**{str(tuple(original_maxterms))} </span>''', unsafe_allow_html=True
+        )
+        st.markdown(
+            f''' 🔷 Your **Don't Care terms**:  <span style="color:#FF4F4F;font-weight:700;font-size:20px">**\u03A3d**{str(tuple(dont_care))} </span>''', unsafe_allow_html=True
         )
         st.markdown(
             f''' 🔷 **Total** number of maxterms entered: <span style="color:#E67E22;font-weight:700;font-size:20px">{len(maxterms)} </span>''', unsafe_allow_html=True
         )
 
-        # handles the number of variables part
-            # Asks if the user wishes to go with it the solution with minimum number of variables required
-            # If the user wishes to give custom number of variables, then check if the given number is feseable or not
         num_of_variables = minimumPossibleVariables(maxterms)
 
         st.markdown(
@@ -762,25 +845,25 @@ def takeInput():
             st.markdown("<h2 style='text-align: left; color: #F5B041;'>K-Map</h2>", unsafe_allow_html=True)  
             if num_of_variables == 2:
                 st.markdown(
-                    ''' <span style="color:#1E8449;font-weight:600;font-size:16px"> **K-Map** for the given </span> <span style="color:#FFD580;font-weight:650;font-size:20px">Maxterms</span>''',
+                    ''' <span style="color:#1E8449;font-weight:600;font-size:16px"> **K-Map** for the given </span> <span style="color:#FFD580;font-weight:650;font-size:20px">maxterms</span>''',
                     unsafe_allow_html= True
                 )
-                st.dataframe(twoVarKmap(maxterms, 0))
+                st.dataframe(twoVarKmap(maxterms, dont_care, 0))
             elif num_of_variables == 3:
                 st.markdown(
-                    ''' <span style="color:#1E8449;font-weight:600;font-size:16px"> **K-Map** for the given </span> <span style="color:#FFD580;font-weight:650;font-size:20px">Maxterms</span>''',
+                    ''' <span style="color:#1E8449;font-weight:600;font-size:16px"> **K-Map** for the given </span> <span style="color:#FFD580;font-weight:650;font-size:20px">maxterms</span>''',
                     unsafe_allow_html= True
                 )
-                st.dataframe(threeVarKmap(maxterms, 0))
+                st.dataframe(threeVarKmap(maxterms, dont_care, 0))
             else:
                 st.markdown(
-                    ''' <span style="color:#1E8449;font-weight:600;font-size:16px"> **K-Map** for the given </span> <span style="color:#FFD580;font-weight:650;font-size:20px">Maxterms</span>''',
+                    ''' <span style="color:#1E8449;font-weight:600;font-size:16px"> **K-Map** for the given </span> <span style="color:#FFD580;font-weight:650;font-size:20px">maxterms</span>''',
                     unsafe_allow_html= True
                 )
-                st.dataframe(fourVarKmap(maxterms, 0))
+                st.dataframe(fourVarKmap(maxterms, dont_care, 0))
             st.markdown("***")
 
-        return [maxterms, num_of_variables, 0]
+        return [maxterms, num_of_variables, original_maxterms, dont_care, 0]
     
 
     # Handles the Boolean expression input
@@ -816,18 +899,30 @@ def takeInput():
             st.markdown("\n\n")
             # Takes input number of variables, and the SOP expression and removes the redundants
             # num_of_vars = int(input("\t\tEnter the number of variables of your function: "))
-            exp = st.text_input("Enter the SOP expression: ")
+            exp = st.text_input("Enter the SOP expression")
             exp = list(exp)
             exp = removeall(exp, ' ')
             exp = removeall(exp, '.')
             exp = removeall(exp, '(')
             exp = removeall(exp, ')')
 
+            dont_care = ""
+            dont_care = st.text_input("Enter the Don't Care SOP expression")
+            dont_care = list(dont_care)
+            dont_care = removeall(dont_care, ' ')
+            dont_care = removeall(dont_care, '.')
+            dont_care = removeall(dont_care, '(')
+            dont_care = removeall(dont_care, ')')
+
             if not exp:
                 st.warning("There is **NOTHING** to Solve here yet!")
                 st.stop()
 
             alphas = []
+
+            if dont_care:
+                exp = exp + ['+'] + dont_care
+
             for i in exp:
                 if i.isalpha():
                     if i not in alphas:
@@ -835,6 +930,11 @@ def takeInput():
                     if i.islower():
                         exp[exp.index(i)] = i.upper()
             
+            for i in dont_care:
+                if i.isalpha():
+                    if i.islower():
+                        dont_care[dont_care.index(i)] = i.upper()
+
             alphas.sort()            
             should_be = []
             for i in range(65, ord(alphas[-1])+1):
@@ -860,13 +960,34 @@ def takeInput():
                     term = []
             if term != []:
                 new_exp.append(term)
+            
+            new_dont_care_exp = []
+            term = []
+            for i in dont_care:
+                if i != '+':
+                    term.append(i)
+                else:
+                    new_dont_care_exp.append(term)
+                    term = []
+            if term != []:
+                new_dont_care_exp.append(term)
 
             # minterms are obtained from the expression
             minterms = expToMinOrMaxterms(new_exp, should_be, 0)
+            dont_care_minterms = expToMinOrMaxterms(new_dont_care_exp, should_be, 0)
+
+            og_minterms = []
+            for i in minterms:
+                if i not in dont_care_minterms:
+                    og_minterms.append(i)
 
             # Prints the minterms and the number of minterms
             st.markdown(
-                f''' 🔷 Your **minterms**:  <span style="color:#FF4F4F;font-weight:700;font-size:20px">**\u03A3m**{str(tuple(minterms))} </span>''', unsafe_allow_html=True
+                f''' 🔷 Your **minterms**:  <span style="color:#FF4F4F;font-weight:700;font-size:20px">**\u03A3m**{str(tuple(og_minterms))} </span>''', unsafe_allow_html=True
+            )
+
+            st.markdown(
+                f''' 🔷 Your **Don't Care terms**:  <span style="color:#FF4F4F;font-weight:700;font-size:20px">**\u03A3d**{str(tuple(dont_care_minterms))} </span>''', unsafe_allow_html=True
             )
             st.markdown(
                 f''' 🔷 **Total** number of minterms entered: <span style="color:#E67E22;font-weight:700;font-size:20px">{len(minterms)} </span>''', unsafe_allow_html=True
@@ -882,23 +1003,23 @@ def takeInput():
                         ''' <span style="color:#1E8449;font-weight:600;font-size:16px"> **K-Map** for the given </span> <span style="color:#FFD580;font-weight:650;font-size:20px">Minterms</span>''',
                         unsafe_allow_html= True
                     )
-                    st.dataframe(twoVarKmap(minterms, 1))
+                    st.dataframe(twoVarKmap(minterms, dont_care_minterms, 1))
                 elif num_of_vars == 3:
                     st.markdown(
                         ''' <span style="color:#1E8449;font-weight:600;font-size:16px"> **K-Map** for the given </span> <span style="color:#FFD580;font-weight:650;font-size:20px">Minterms</span>''',
                         unsafe_allow_html= True
                     )
-                    st.dataframe(threeVarKmap(minterms, 1))
+                    st.dataframe(threeVarKmap(minterms, dont_care_minterms, 1))
                 else:
                     st.markdown(
                         ''' <span style="color:#1E8449;font-weight:600;font-size:16px"> **K-Map** for the given </span> <span style="color:#FFD580;font-weight:650;font-size:20px">Minterms</span>''',
                         unsafe_allow_html= True
                     )
-                    st.dataframe(fourVarKmap(minterms, 1))
+                    st.dataframe(fourVarKmap(minterms, dont_care_minterms, 1))
                 st.markdown("***")
                 
 
-            return [minterms, num_of_vars, 1]
+            return [minterms, num_of_vars, og_minterms, dont_care_minterms, 1]
 
         elif exp_select == "POS (Product of Sums)":
             
@@ -916,23 +1037,39 @@ def takeInput():
 
             st.markdown("\n\n")
             # Takes input number of variables, and the POS expression and removes the redundants
-            exp = st.text_input("Enter the POS expression: ")
+            exp = st.text_input("Enter the POS expression")
             exp = list(exp)
             exp = removeall(exp, ' ')
             exp = removeall(exp, '(')
             exp = removeall(exp, ')')
+
+            dont_care = ""
+            dont_care = st.text_input("Enter the Don't Care POS expression")
+            dont_care = removeall(dont_care, ' ')
+            dont_care = removeall(dont_care, '(')
+            dont_care = removeall(dont_care, ')')
             
             if not exp:
                 st.warning("There is **NOTHING** to Solve here yet!")
                 st.stop()
 
             alphas = []
+
+            if dont_care:
+                exp = exp + ['.'] + dont_care
+
+
             for i in exp:
                 if i.isalpha():
                     if i not in alphas:
                         alphas.append(i.upper())
                     if i.islower():
                         exp[exp.index(i)] = i.upper()
+            
+            for i in dont_care:
+                if i.isalpha():
+                    if i.islower():
+                        dont_care[dont_care.index(i)] = i.upper()
             
             alphas.sort()            
             should_be = []
@@ -960,15 +1097,36 @@ def takeInput():
                         term = []
             if term != []:
                 new_exp.append(term)
+
+            new_dont_care_exp = []
+            term = []
+            for i in dont_care:
+                if i != '.':
+                    term.append(i)
+                else:
+                    new_dont_care_exp.append(term)
+                    term = []
+            if term != []:
+                new_dont_care_exp.append(term)
             
             # print(new_exp)
 
             # Coverts the POS expression to Maxterms
             maxterms = expToMinOrMaxterms(new_exp, should_be, 1)
+            dont_care_maxterms = expToMinOrMaxterms(new_dont_care_exp, should_be, 1)
+
+            og_maxterms = []
+            for i in maxterms:
+                if i not in dont_care_maxterms:
+                    og_maxterms.append(i)
 
             # Prints the maxterms and the number of maxterms
             st.markdown(
-                f''' 🔷 Your **minterms**:  <span style="color:#FF4F4F;font-weight:700;font-size:20px">**\u03A0M**{str(tuple(maxterms))} </span>''', unsafe_allow_html=True
+                f''' 🔷 Your **Maxterms**:  <span style="color:#FF4F4F;font-weight:700;font-size:20px">**\u03A0M**{str(tuple(og_maxterms))} </span>''', unsafe_allow_html=True
+            )
+
+            st.markdown(
+                f''' 🔷 Your **Don't Care terms**:  <span style="color:#FF4F4F;font-weight:700;font-size:20px">**\u03A0d**{str(tuple(dont_care_maxterms))} </span>''', unsafe_allow_html=True
             )
             st.markdown(
                 f''' 🔷 **Total** number of maxterms entered: <span style="color:#E67E22;font-weight:700;font-size:20px">{len(maxterms)} </span>''', unsafe_allow_html=True
@@ -982,16 +1140,16 @@ def takeInput():
                 st.markdown("<h2 style='text-align: left; color: #F5B041;'>K-Map</h2>", unsafe_allow_html=True)  
                 if num_of_vars == 2:
                     st.write("**K-Map** for the given maxterms")
-                    st.dataframe(twoVarKmap(maxterms, 0))
+                    st.dataframe(twoVarKmap(maxterms, dont_care_maxterms, 0))
                 elif num_of_vars == 3:
                     st.write("**K-Map** for the given maxterms")
-                    st.dataframe(threeVarKmap(maxterms, 0))
+                    st.dataframe(threeVarKmap(maxterms, dont_care_maxterms, 0))
                 else:
                     st.write("**K-Map** for the given maxterms")
-                    st.dataframe(fourVarKmap(maxterms, 0))
+                    st.dataframe(fourVarKmap(maxterms, dont_care_maxterms, 0))
                 st.markdown("***")
 
-            return [maxterms, num_of_vars, 0]
+            return [maxterms, num_of_vars, og_maxterms, dont_care_maxterms, 0]
 
 
 def load_lottiefile(filepath : str):
@@ -1054,7 +1212,9 @@ if __name__ == "__main__":
 
     minterms = input_results[0]
     num_of_variables = input_results[1]
-    zero_or_one = input_results[2]
+    original_minterms = input_results[2]
+    dont_care = input_results[3]
+    zero_or_one = input_results[4]
 
     if minterms == []:
         st.warning(" There is NOTHING to solve here!")
@@ -1090,7 +1250,7 @@ if __name__ == "__main__":
     decimals_to_send = prime_decimals.copy()    # So that the original list is unchanged
 
 
-    to_send = minterms.copy()   # So that the original list of minterms is unchanged
+    to_send = original_minterms.copy()   # So that the original list of minterms is unchanged
 
     # Obtaining the Essential Prime implicants in the form of lists of minterms
     EPIs = findEPIs(decimals_to_send, to_send, [])
@@ -1138,41 +1298,115 @@ if __name__ == "__main__":
 
     # Printing the solution K-Map if the number of variables is 2 ,3 or 4
         # K-Map printing
+    temp_dont_care = []
     if num_of_variables in [2,3,4]:
         st.markdown("***")
         st.markdown("<h2 style='text-align: left; color: #F5B041;'>Solution in K-Map</h2>", unsafe_allow_html=True)  
 
         # K-Map printing
-        if num_of_variables in [2,3,4]:
-            if zero_or_one == 1:
-
-                if num_of_variables == 2:
-
-
                     
+        if zero_or_one == 1:
+            temp_dont_care = []
+            if num_of_variables == 2:
 
+                if 'last_epi_2' not in st.session_state:
+                    st.session_state['last_epi_2'] = 0
+                
+                next = st.button('Next EPI 👉🏽 👉🏽 👉🏽')
+                if next:
+                    if st.session_state.last_epi_2 < len(EPIs) - 1:
+                        st.session_state.last_epi_2 += 1
+
+                previous = st.button('Previous EPI 👈🏽 👈🏽')
+                if previous:
+                    if st.session_state.last_epi_2 > 0:
+                        st.session_state.last_epi_2 -= 1
+                new_map = st.session_state.last_epi_2
+
+                for i in EPIs[new_map]:
+                    if i in dont_care:
+                        temp_dont_care.append(i)
+
+                st.dataframe(twoVarKmap(EPIs[new_map], temp_dont_care, 1))
+                temp_dont_care = []
+
+            elif num_of_variables == 3:
+
+                if 'last_epi_3' not in st.session_state:
+                    st.session_state['last_epi_3'] = 0
+                
+                next = st.button('Next EPI 👉🏽 👉🏽')
+                if next:
+                    if st.session_state.last_epi_3 < len(EPIs) - 1:
+                        st.session_state.last_epi_3 += 1
+
+                previous = st.button('Previous EPI 👈🏽')
+                if previous:
+                    if st.session_state.last_epi_3 > 0:
+                        st.session_state.last_epi_3 -= 1
+                new_map = st.session_state.last_epi_3
+
+                for i in EPIs[new_map]:
+                    if i in dont_care:
+                        temp_dont_care.append(i)
+
+                st.dataframe(threeVarKmap(EPIs[new_map], temp_dont_care, 1))
+                temp_dont_care = []
+
+            else:
+
+                if 'last_epi_4' not in st.session_state:
+                    st.session_state['last_epi_4'] = 0
+                
+                next = st.button('Next EPI 👉🏽')
+                if next:
+                    if st.session_state.last_epi_4 < len(EPIs) - 1:
+                        st.session_state.last_epi_4 += 1
+
+                previous = st.button('Previous EPI 👈🏽')
+                if previous:
+                    if st.session_state.last_epi_4 > 0:
+                        st.session_state.last_epi_4 -= 1
+                new_map = st.session_state.last_epi_4
+
+                for i in EPIs[new_map]:
+                    if i in dont_care:
+                        temp_dont_care.append(i)
+
+                st.dataframe(fourVarKmap(EPIs[new_map], temp_dont_care, 1))
+                temp_dont_care = []
+
+        else:
+            if num_of_variables in [2,3,4]:
+                st.markdown("***")
+                if num_of_variables == 2:
                     if 'last_epi_2' not in st.session_state:
                         st.session_state['last_epi_2'] = 0
                     
-                    next = st.button('Next EPI 👉🏽 👉🏽 👉🏽')
+                    next = st.button('Next EPI 👉🏽')
                     if next:
                         if st.session_state.last_epi_2 < len(EPIs) - 1:
                             st.session_state.last_epi_2 += 1
 
-                    previous = st.button('Previous EPI 👈🏽 👈🏽')
+                    previous = st.button('Previous EPI 👈🏽')
                     if previous:
                         if st.session_state.last_epi_2 > 0:
                             st.session_state.last_epi_2 -= 1
                     new_map = st.session_state.last_epi_2
 
-                    st.dataframe(twoVarKmap(EPIs[new_map], 1))
+                    for i in EPIs[new_map]:
+                        if i in dont_care:
+                            temp_dont_care.append(i)
+
+                    st.dataframe(twoVarKmap(EPIs[new_map], temp_dont_care, 0))
+                    temp_dont_care = []
 
                 elif num_of_variables == 3:
 
                     if 'last_epi_3' not in st.session_state:
                         st.session_state['last_epi_3'] = 0
                     
-                    next = st.button('Next EPI 👉🏽 👉🏽')
+                    next = st.button('Next EPI 👉🏽')
                     if next:
                         if st.session_state.last_epi_3 < len(EPIs) - 1:
                             st.session_state.last_epi_3 += 1
@@ -1182,7 +1416,13 @@ if __name__ == "__main__":
                         if st.session_state.last_epi_3 > 0:
                             st.session_state.last_epi_3 -= 1
                     new_map = st.session_state.last_epi_3
-                    st.dataframe(threeVarKmap(EPIs[new_map], 1))
+
+                    for i in EPIs[new_map]:
+                        if i in dont_care:
+                            temp_dont_care.append(i)
+
+                    st.dataframe(threeVarKmap(EPIs[new_map], temp_dont_care, 0))
+                    temp_dont_care = []
 
                 else:
 
@@ -1199,62 +1439,13 @@ if __name__ == "__main__":
                         if st.session_state.last_epi_4 > 0:
                             st.session_state.last_epi_4 -= 1
                     new_map = st.session_state.last_epi_4
-                    st.dataframe(fourVarKmap(EPIs[new_map], 1))
-            else:
-                if num_of_variables in [2,3,4]:
-                    st.markdown("***")
-                    if num_of_variables == 2:
-                        if 'last_epi_2' not in st.session_state:
-                            st.session_state['last_epi_2'] = 0
-                        
-                        next = st.button('Next EPI 👉🏽')
-                        if next:
-                            if st.session_state.last_epi_2 < len(EPIs) - 1:
-                                st.session_state.last_epi_2 += 1
-
-                        previous = st.button('Previous EPI 👈🏽')
-                        if previous:
-                            if st.session_state.last_epi_2 > 0:
-                                st.session_state.last_epi_2 -= 1
-                        new_map = st.session_state.last_epi_2
-
-                        st.dataframe(twoVarKmap(EPIs[new_map], 0))
-
-                    elif num_of_variables == 3:
-
-                        if 'last_epi_3' not in st.session_state:
-                            st.session_state['last_epi_3'] = 0
-                        
-                        next = st.button('Next EPI 👉🏽')
-                        if next:
-                            if st.session_state.last_epi_3 < len(EPIs) - 1:
-                                st.session_state.last_epi_3 += 1
-
-                        previous = st.button('Previous EPI 👈🏽')
-                        if previous:
-                            if st.session_state.last_epi_3 > 0:
-                                st.session_state.last_epi_3 -= 1
-                        new_map = st.session_state.last_epi_3
-
-                        st.dataframe(threeVarKmap(EPIs[new_map], 0))
-
-                    else:
-
-                        if 'last_epi_4' not in st.session_state:
-                            st.session_state['last_epi_4'] = 0
-                        
-                        next = st.button('Next EPI 👉🏽')
-                        if next:
-                            if st.session_state.last_epi_4 < len(EPIs) - 1:
-                                st.session_state.last_epi_4 += 1
-
-                        previous = st.button('Previous EPI 👈🏽')
-                        if previous:
-                            if st.session_state.last_epi_4 > 0:
-                                st.session_state.last_epi_4 -= 1
-                        new_map = st.session_state.last_epi_4
-
-                        st.dataframe(fourVarKmap(EPIs[new_map], 0))
+                    
+                    for i in EPIs[new_map]:
+                        if i in dont_care:
+                            temp_dont_care.append(i)
+                            
+                    st.dataframe(fourVarKmap(EPIs[new_map], temp_dont_care, 0))
+                    temp_dont_care = []
     
     if 'balloon' not in st.session_state:
         st.session_state['balloon'] = 1
