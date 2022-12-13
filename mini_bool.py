@@ -84,7 +84,7 @@ def subBinaryConvertor(term, num):
                     term.insert(0,0)
     return term
 
-
+@st.cache(suppress_st_warning=True)
 # Converts the given list of minterms into their corresponiding binary form for the given number of bits for each binary number.
 def binaryConvertor(lst_of_decimals, num_of_bits):  # lst_of_decimals: list of minterms, num_of_bits: number of bits required
     bin_term_lst = []
@@ -118,6 +118,7 @@ def binaryConvertor(lst_of_decimals, num_of_bits):  # lst_of_decimals: list of m
 
     return bin_term_lst   # List of minterms converted into binary form, each form is in their own seperate list in the mentioned list. i.e. eg: bin_term_lst = [[0,0,0], [0,0,1], [0,1,0]] for lst_of_decimals = [0, 1, 2]
 
+@st.cache(suppress_st_warning=True)
 # Groups the minterms in a list having equal number of 1's in their binary form, and returns this list of groups
 def groupTerms(binary_list):    # binary_list: list of binary numbers obtained from the binaryConvertor() function
     
@@ -168,7 +169,8 @@ def groupTerms(binary_list):    # binary_list: list of binary numbers obtained f
     totalGroup = temp 
 
     return totalGroup # list of groups of the terms having same number of 1's in their binary form and decimal form
-            
+
+@st.cache(suppress_st_warning=True)
 # Compares two groups if any element of group 1 has all the bits same except 1 and the difference as at the same position, it replaces that position with a '_' and returns a list of a new group obtained from that group1 and group2      
 def compareGroups(group1, group2):
     global used
@@ -206,7 +208,7 @@ def compareGroups(group1, group2):
 # It takes the list obtained from binaryConvertor(that contains the groups) and sends two consecutive groups to compareGroups -> obtains a list of all matched groups for the first batch -> recurses with the new list of groups obtained from the last function call -> continues till there cannot be any possible matching( meaning that we have obtained the prime implicants) and returns this list of finally matched groups to the main program
 
 
-
+@st.cache(suppress_st_warning=True)
 def matchPairs(grouped_binary_list):
     comparedGroups = []
     matched = []
@@ -316,6 +318,7 @@ def primeToDecmal(prime_implicants):
             x = 0
     return decimals_list
 
+@st.cache(suppress_st_warning=True)
 # Returns the essential prime_implicants from the list of prime implicants
 def findEPIs(prime_implicants, minterms, epis):
     
@@ -377,9 +380,11 @@ def findEPIs(prime_implicants, minterms, epis):
         return epis
     return findEPIs(prime_implicants, minterms, epis)
 
+
 # Get the EPIs as argument in the function that will return  the boolean exprssion in a list with each element as the terms $
 # De Morgan's fucntion:
     # check each term of the expression, if an alphabet is succeded by a ` then just append the alphabet in new term then append +, if not the append the alphabet followed by `
+@st.cache(suppress_st_warning=True)
 def deMorgans(expression, to_convert):
     # to_contert = 0: sop -> pos, to_contert = 1: pos -> sop
 
@@ -426,6 +431,7 @@ def deMorgans(expression, to_convert):
         return sop
 
 # Takes the list of essential prime implicants and returns the corresponding SOP expression in a list with each element as an element
+@st.cache(suppress_st_warning=True)
 def getSop(EPIs):
 
     var = 65
@@ -454,6 +460,7 @@ def getSop(EPIs):
     return sop
 
 # Takes maxterms and converts them to their corresponding minterms
+@st.cache(suppress_st_warning=True)
 def maxToMin(maxterms, num_of_variables):
     if num_of_variables == 0:
         return []
@@ -464,6 +471,7 @@ def maxToMin(maxterms, num_of_variables):
     return minterms
 
 # Takes an expression and returns a list of minterms involved in the expression
+@st.cache(suppress_st_warning=True)
 def expToMinOrMaxterms(exp, vars, min_max):
     if min_max == 0:
         temp = [0,1]
@@ -504,7 +512,7 @@ def expToMinOrMaxterms(exp, vars, min_max):
 
     return minterms
 
-
+@st.cache(suppress_st_warning=True)
 def twoVarKmap(minterms, dont_care, zero_or_one):
     kmap = [[' ', ' '], [' ', ' ']]
     map = [' ', ' ', ' ', ' ']
@@ -532,7 +540,7 @@ def twoVarKmap(minterms, dont_care, zero_or_one):
 
     return df
 
-
+@st.cache(suppress_st_warning=True)
 def threeVarKmap(minterms, dont_care, zero_or_one):
     kmap = [[' ', ' ', ' ', ' '], [' ', ' ', ' ', ' ']]
     map = [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ']
@@ -579,7 +587,7 @@ def threeVarKmap(minterms, dont_care, zero_or_one):
 
     return df
 
-
+@st.cache(suppress_st_warning=True)
 def fourVarKmap(minterms, dont_care, zero_or_one):
     kmap = [[' ', ' ', ' ', ' '], [' ', ' ', ' ', ' '], [' ', ' ', ' ', ' '], [' ', ' ', ' ', ' ']]
     map = [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ']
@@ -656,7 +664,6 @@ def fourVarKmap(minterms, dont_care, zero_or_one):
     )
 
     return df
-
 
 # Handles all the inputs and returns a list containing the list of minterms, number of variables, 0(for maxterms) or 1(for minterms)
 def takeInput():
@@ -1152,10 +1159,12 @@ def takeInput():
             return [maxterms, num_of_vars, og_maxterms, dont_care_maxterms, 0]
 
 
+@st.cache(suppress_st_warning=True)
 def load_lottiefile(filepath : str):
     with open(filepath, 'r') as f:
         return json.load(f)
 
+@st.cache(suppress_st_warning=True)
 def animation(filepath, hight, wdth):
     anime_name = load_lottiefile(filepath)
     
