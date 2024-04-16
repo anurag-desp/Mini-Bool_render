@@ -84,7 +84,7 @@ def subBinaryConvertor(term, num):
                     term.insert(0,0)
     return term
 
-@st.cache(suppress_st_warning=True)
+@st.cache_data(show_spinner=True)
 # Converts the given list of minterms into their corresponiding binary form for the given number of bits for each binary number.
 def binaryConvertor(lst_of_decimals, num_of_bits):  # lst_of_decimals: list of minterms, num_of_bits: number of bits required
     bin_term_lst = []
@@ -118,7 +118,7 @@ def binaryConvertor(lst_of_decimals, num_of_bits):  # lst_of_decimals: list of m
 
     return bin_term_lst   # List of minterms converted into binary form, each form is in their own seperate list in the mentioned list. i.e. eg: bin_term_lst = [[0,0,0], [0,0,1], [0,1,0]] for lst_of_decimals = [0, 1, 2]
 
-@st.cache(suppress_st_warning=True)
+@st.cache_data(show_spinner=True)
 # Groups the minterms in a list having equal number of 1's in their binary form, and returns this list of groups
 def groupTerms(binary_list):    # binary_list: list of binary numbers obtained from the binaryConvertor() function
     
@@ -170,7 +170,7 @@ def groupTerms(binary_list):    # binary_list: list of binary numbers obtained f
 
     return totalGroup # list of groups of the terms having same number of 1's in their binary form and decimal form
 
-@st.cache(suppress_st_warning=True)
+@st.cache_data(show_spinner=True)
 # Compares two groups if any element of group 1 has all the bits same except 1 and the difference as at the same position, it replaces that position with a '_' and returns a list of a new group obtained from that group1 and group2      
 def compareGroups(group1, group2):
     global used
@@ -208,7 +208,7 @@ def compareGroups(group1, group2):
 # It takes the list obtained from binaryConvertor(that contains the groups) and sends two consecutive groups to compareGroups -> obtains a list of all matched groups for the first batch -> recurses with the new list of groups obtained from the last function call -> continues till there cannot be any possible matching( meaning that we have obtained the prime implicants) and returns this list of finally matched groups to the main program
 
 
-@st.cache(suppress_st_warning=True)
+@st.cache_data(show_spinner=True)
 def matchPairs(grouped_binary_list):
     comparedGroups = []
     matched = []
@@ -318,7 +318,7 @@ def primeToDecmal(prime_implicants):
             x = 0
     return decimals_list
 
-@st.cache(suppress_st_warning=True)
+@st.cache_data(show_spinner=True)
 # Returns the essential prime_implicants from the list of prime implicants
 def findEPIs(prime_implicants, minterms, epis):
     
@@ -384,7 +384,7 @@ def findEPIs(prime_implicants, minterms, epis):
 # Get the EPIs as argument in the function that will return  the boolean exprssion in a list with each element as the terms $
 # De Morgan's fucntion:
     # check each term of the expression, if an alphabet is succeded by a ` then just append the alphabet in new term then append +, if not the append the alphabet followed by `
-@st.cache(suppress_st_warning=True)
+@st.cache_data(show_spinner=True)
 def deMorgans(expression, to_convert):
     # to_contert = 0: sop -> pos, to_contert = 1: pos -> sop
 
@@ -431,7 +431,7 @@ def deMorgans(expression, to_convert):
         return sop
 
 # Takes the list of essential prime implicants and returns the corresponding SOP expression in a list with each element as an element
-@st.cache(suppress_st_warning=True)
+@st.cache_data(show_spinner=True)
 def getSop(EPIs):
 
     var = 65
@@ -460,7 +460,7 @@ def getSop(EPIs):
     return sop
 
 # Takes maxterms and converts them to their corresponding minterms
-@st.cache(suppress_st_warning=True)
+@st.cache_data(show_spinner=True)
 def maxToMin(maxterms, num_of_variables):
     if num_of_variables == 0:
         return []
@@ -471,7 +471,7 @@ def maxToMin(maxterms, num_of_variables):
     return minterms
 
 # Takes an expression and returns a list of minterms involved in the expression
-@st.cache(suppress_st_warning=True)
+@st.cache_data(show_spinner=True)
 def expToMinOrMaxterms(exp, vars, min_max):
     if min_max == 0:
         temp = [0,1]
@@ -512,7 +512,7 @@ def expToMinOrMaxterms(exp, vars, min_max):
 
     return minterms
 
-@st.cache(suppress_st_warning=True)
+@st.cache_data(show_spinner=True)
 def twoVarKmap(minterms, dont_care, zero_or_one):
     kmap = [[' ', ' '], [' ', ' ']]
     map = [' ', ' ', ' ', ' ']
@@ -540,7 +540,7 @@ def twoVarKmap(minterms, dont_care, zero_or_one):
 
     return df
 
-@st.cache(suppress_st_warning=True)
+@st.cache_data(show_spinner=True)
 def threeVarKmap(minterms, dont_care, zero_or_one):
     kmap = [[' ', ' ', ' ', ' '], [' ', ' ', ' ', ' ']]
     map = [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ']
@@ -587,7 +587,7 @@ def threeVarKmap(minterms, dont_care, zero_or_one):
 
     return df
 
-@st.cache(suppress_st_warning=True)
+@st.cache_data(show_spinner=True)
 def fourVarKmap(minterms, dont_care, zero_or_one):
     kmap = [[' ', ' ', ' ', ' '], [' ', ' ', ' ', ' '], [' ', ' ', ' ', ' '], [' ', ' ', ' ', ' ']]
     map = [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ']
@@ -756,7 +756,7 @@ def takeInput():
         # K-Map printing
         if num_of_variables in [2,3,4]:
             st.markdown("***")
-            animation("animations/detective_search.json", 250, 200)
+            # animation("animations/detective_search.json", 250, 200)
             st.markdown("<h2 style='text-align: left; color: #F5B041;'>K-Map</h2>", unsafe_allow_html=True)  
             if num_of_variables == 2:
                 st.markdown(
@@ -1159,12 +1159,12 @@ def takeInput():
             return [maxterms, num_of_vars, og_maxterms, dont_care_maxterms, 0]
 
 
-@st.cache(suppress_st_warning=True)
+@st.cache_data(show_spinner=True)
 def load_lottiefile(filepath : str):
     with open(filepath, 'r') as f:
         return json.load(f)
 
-@st.cache(suppress_st_warning=True)
+@st.cache_data(show_spinner=True)
 def animation(filepath, hight, wdth):
     anime_name = load_lottiefile(filepath)
     
@@ -1188,30 +1188,37 @@ if __name__ == "__main__":
 
     st.markdown(
         '''<span style="color:#C70039;font-weight:600;font-size:20px"> Experiential Learning Project(2022)</span>
-        <br><span style="color:#1F618D;font-weight:600;font-size:30px">SCLD</span>
-        <span style="color:#E67E22;font-weight:600;font-size:16px">(Switching Circuits and Logic Design)</span>''',
+        <br><span style="color:#1F618D;font-weight:600;font-size:30px">Group: 04</span>''',
         unsafe_allow_html = True)
 
     # Hit counter
 
-    st.sidebar.markdown('Thank You for visiting!\n![Visitor count](https://shields-io-visitor-counter.herokuapp.com/badge?page=https://share.streamlit.io/https://minibool-lohi.onrender.com/&label=VisitorsCount&labelColor=000000&logo=GitHub&logoColor=FFFFFF&color=1D70B8&style=for-the-badge)')
+    st.sidebar.markdown('Thank you for visiting!')
 
     st.markdown("___")
     st.markdown(
         '''<h5 style = 'text-align: left;'><span style="color:#1E5E9E;">
-        Creator:</span> <span style="color:#CB2C2C;font-weight:250;font-size:25px"><b>Anurag</b></span></h5> 
+        Creator:</span> <span style="color:#CB2C2C;font-weight:250;font-size:25px"><b>Anurag Raj(2101020762)</b></span></h5> 
         <h5 style = 'text-align: right;'><span style="color:#CB2C2C;">Mentor:</span> <span style="color:#1E5E9E;font-weight:250;font-size:26px"><b>Dr. Tusarkanti Dash</b></span></h5>''',
         unsafe_allow_html=True
     )
 
+
     robot_hi = load_lottiefile("animations/robot_says_hi.json")
 
-    st_lottie(
-        robot_hi,
-        loop = True,
-        height = 600,
-        width = 400
-    )
+    col1, col2, col3 = st.columns(3)
+    with col1:
+        pass
+    with col2:
+        st_lottie(
+            robot_hi,
+            loop = True,
+            height = 600,
+            width = 400
+        )
+    with col3:
+        pass
+
     # Getting the results of the input and seperated them for convenience
     input_results = takeInput()
 
@@ -1230,12 +1237,19 @@ if __name__ == "__main__":
     
     robot_butterfly = load_lottiefile("animations/butterfly-on-mechanical-robot-finger-hand.json")
     
-    st_lottie(
-        robot_butterfly,
-        loop = True,
-        height = 350,
-        width = 250
-    )
+    col1, col2, col3 = st.columns(3)
+    with col1:
+        pass
+    with col2:
+        st_lottie(
+            robot_butterfly,
+            loop = True,
+            height = 350,
+            width = 250
+        )
+    with col3:
+        pass
+
 
     # Obtaining the list of binary numbers for the given list of minterms with number of bits ineach equal to the given number of variables
     binary_list = binaryConvertor(minterms, num_of_variables)
@@ -1464,12 +1478,19 @@ if __name__ == "__main__":
     if st.session_state.balloon == 1:
         st.balloons()
         
-    anime_done = load_lottiefile("animations/done.json")
 
-    st_lottie(
-        anime_done,
-        loop = True,
-    )
+    # anime_done = load_lottiefile("animations/done.json")
+    # col1, col2, col3 = st.columns(3)
+    # with col1:
+    #     pass
+    # with col2:
+    #     st_lottie(
+    #         anime_done,
+    #         loop = True,
+    #     )
+    # with col3:
+    #     pass
+
 
     # making them empty as they are global variables and to make this program endless until exit is entered, they need to be refreshed for each iteration
     used = []
