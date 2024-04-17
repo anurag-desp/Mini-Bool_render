@@ -848,7 +848,7 @@ def takeInput():
         # K-Map printing
         if num_of_variables in [2,3,4]:
             st.markdown("***")
-            animation("animations/detective_search.json", 250, 200)
+            # animation("animations/detective_search.json", 250, 200)
             st.markdown("<h2 style='text-align: left; color: #F5B041;'>K-Map</h2>", unsafe_allow_html=True)  
             if num_of_variables == 2:
                 st.markdown(
@@ -1003,7 +1003,7 @@ def takeInput():
              # K-Map printing
             if num_of_vars in [2,3,4]:
                 st.markdown("***")
-                animation("animations/detective_search.json", 250, 200)
+                # animation("animations/detective_search.json", 250, 200)
                 st.markdown("<h2 style='text-align: left; color: #F5B041;'>K-Map</h2>", unsafe_allow_html=True)  
                 if num_of_vars == 2:
                     st.markdown(
@@ -1143,7 +1143,7 @@ def takeInput():
             if num_of_vars in [2,3,4]:
 
                 st.markdown("***")
-                animation("animations/detective_search.json", 250, 200)
+                # animation("animations/detective_search.json", 250, 200)
                 st.markdown("<h2 style='text-align: left; color: #F5B041;'>K-Map</h2>", unsafe_allow_html=True)  
                 if num_of_vars == 2:
                     st.write("**K-Map** for the given maxterms")
@@ -1213,8 +1213,8 @@ if __name__ == "__main__":
         st_lottie(
             robot_hi,
             loop = True,
-            height = 600,
-            width = 400
+            height = 250,
+            width = 200
         )
     with col3:
         pass
@@ -1244,8 +1244,8 @@ if __name__ == "__main__":
         st_lottie(
             robot_butterfly,
             loop = True,
-            height = 350,
-            width = 250
+            height = 250,
+            width = 200
         )
     with col3:
         pass
